@@ -10,6 +10,7 @@
 
 #include "../inc/shader.hpp"
 #include "../inc/vertex.hpp"
+#include "../inc/render_engine.hpp"
 // clang-format on
 
 void framebuffer_size_callback(GLFWwindow *window, int width, int height);
@@ -55,20 +56,29 @@ int main() {
 	}
 
 	Shader shader("./src/shaders/test.vert", "./src/shaders/test.frag");
-	EvoSim::VertexArray testVertices(2, {0});
 
-	testVertices.PushRow({0.5f, -0.5f});
-	testVertices.PushRow({-0.5f, -0.5f});
-	testVertices.PushRow({-0.5f, 0.5f});
+	EvoSim::VertexArray testVertices(5, {0,2});
 
-	unsigned int VBO, VAO;
-	glGenVertexArrays(1, &VAO);
-	glGenBuffers(1, &VBO);
-	glBindVertexArray(VAO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, testVertices.SizeBytes(), testVertices.Data(), GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void *)0);
-	glEnableVertexAttribArray(0);
+	testVertices.PushVertexRow({0.1f, -0.1f, 1.0f, 0, 0});
+	testVertices.PushVertexRow({-0.1f, -0.1f, 1.0f, 0, 0});
+	testVertices.PushVertexRow({-0.1f, 0.1f, 1.0f, 0, 0});
+	testVertices.PushVertexRow({0.1f, 0.1f, 1.0f, 0, 0});
+
+	testVertices.PushVertexRow({0.3f, -0.1f, 1.0f, 0, 0});
+	testVertices.PushVertexRow({0.1f, -0.1f, 1.0f, 0, 0});
+	testVertices.PushVertexRow({0.1f, 0.1f, 1.0f, 0, 0});
+	testVertices.PushVertexRow({0.3f, 0.1f, 1.0f, 0, 0});
+
+	//testVertices.PushVertexRow({0.4f, -0.1f});
+	//testVertices.PushVertexRow({0.2f, -0.1f});
+	//testVertices.PushVertexRow({0.2f, 0.1f});
+	//testVertices.PushVertexRow({0.4f, 0.1f});
+
+	testVertices.PushIndexRow({0,1,2,2,3,0});
+	testVertices.PushIndexRow({4,5,6,6,7,4});
+
+	testVertices.BufferData();
+
 
 	unsigned int scaleLoc = glGetUniformLocation(shader.ID, "scale");
 
@@ -94,8 +104,10 @@ int main() {
 		// ------
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);
-		shader.use();
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		EvoSim::RenderVertexArray(testVertices, shader);
+		//glBindVertexArray(testVertices.VAO);
+		//shader.use();
+		//glDrawArrays(GL_TRIANGLES, 0, 3);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved
 		// etc.)
@@ -103,7 +115,7 @@ int main() {
 		glfwSwapBuffers(window.get());
 		glfwPollEvents();
 		using namespace std::chrono_literals;
-		std::this_thread::sleep_for(32ms);
+		std::this_thread::sleep_for(16ms);
 	}
 
 	// glfw: terminate, clearing all previously allocated GLFW resources.

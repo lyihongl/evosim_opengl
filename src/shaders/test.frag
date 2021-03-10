@@ -2,7 +2,7 @@
 out vec4 FragColor;
   
 in vec4 vertexColor; // the input variable from the vertex shader (same name and same type)  
-in vec2 coordTest;
+in vec4 position;
 
 float draw_circle(vec2 coord, float radius) {
     return step(length(coord), radius);
@@ -10,12 +10,14 @@ float draw_circle(vec2 coord, float radius) {
 
 void main()
 {
-    //vec2 coord = coordTest;
+    //vec2 coord = coordTest.xy;
     //float circle=draw_circle(coord, 0.1);
-    //vec3 color = vec3(circle);
+    //vec4 color = vec4(vec3(circle), 1.0)*vertexColor;
     //if(color.x == 0){
-    //    color = vec3(0.2f, 0.3f, 0.3f);
+    //    color.w = 0.0;
     //}
-    //FragColor = vec4(color, 1.0);
-    FragColor = vertexColor;
+    //FragColor = vertexColor;
+    //vertexColor.w = 0.0f;
+    //vec4 color = vec4(0,0,0,0);
+    FragColor = vec4(position.x*2, 0.3, 0.0, 1.0);
 } 
